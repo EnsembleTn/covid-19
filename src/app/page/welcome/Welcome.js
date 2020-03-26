@@ -177,7 +177,7 @@ const Welcome = props => {
   };
   const submitForm = data => {
     const newData = { ...responses, ...data };
-    console.log("newData", newData);
+    console.log("newDataaaaaaaaaaaa", newData);
     axios
       .post(`${DOMAINE}/api/v1/patient`, { ...newData })
       .then(res =>{

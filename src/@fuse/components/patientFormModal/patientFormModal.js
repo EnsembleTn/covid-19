@@ -48,6 +48,8 @@ const PatientFormModal = ({
   const [isBlocked, setIsBlocked] = useState(false);
   const [paly, setplay] = useState(true);
   const [stopRecord, setstopRecord] = useState(false);
+  const [base64Image, setbase64Image] = useState('');
+
 
 
 
@@ -73,28 +75,42 @@ const PatientFormModal = ({
         setBlobURL(blobURL);
         setplay(true)
         setstopRecord(false)
-        console.log('STEPPPPPPPP',blobURL)
+        console.log('STEPPPPPPPP', blobURL)
 
 
         axios({
           method: 'get',
-          url: blobURL, 
+          url: blobURL,
           responseType: 'blob'
-      }).then(function(response){
-        console.log('ressssssss',response.data)
+        }).then(function (response) {
+          console.log('ressssssss', response.data)
 
-           var reader = new FileReader();
-           reader.readAsDataURL(response.data); 
-           reader.onloadend = function() {
-               var base64data = reader.result;
-               
-               console.log('Baseeeeeeeee',base64data)
-           }
-  
-      })
-        
+          var reader = new FileReader();
+          reader.readAsDataURL(response.data);
+          reader.onloadend = function () {
+            var base64data = reader.result;
+
+            console.log('Baseeeeeeeee', base64data)
+            setbase64Image(base64data)
+          }
+
+        })
+
       })
       .catch(e => console.log(e));
+
+
+
+
+
+
+
+
+
+
+
+
+
   };
 
 
@@ -106,9 +122,10 @@ const PatientFormModal = ({
         .then(() => {
           setIsRecording(true);
           setplay(false)
-        setstopRecord(true)
+          setstopRecord(true)
         })
         .catch(e => console.error(e));
+
     }
   };
 
@@ -116,9 +133,6 @@ const PatientFormModal = ({
   const handleClose = id => {
     modalAction(id);
   };
-
-
-
 
 
   /*   function UpperCasingTextField(props) {
@@ -148,16 +162,6 @@ const PatientFormModal = ({
     updateResponse(data);
   };
 
-  const handleAudioStop = (data) => {
-    //     var reader = new FileReader();
-    //  reader.readAsDataURL(data); 
-    //  reader.onloadend = function() {
-    //      var base64data = reader.result;                
-    //      console.log('ssssssss',base64data);
-    //  }
-
-
-  }
   console.log("dynamicCount,  staticCount,", dynamicCount, staticCount);
   return (
     <Modal className="patientForm" id="PatientForm" ModalAction={modalAction}>
@@ -188,23 +192,20 @@ const PatientFormModal = ({
         <div className="tim3">
           <div >
             {
-              paly==true ?         <button onClick={start} disabled={isRecording} className="tim">
-     
-              </button> :""
+              paly == true ? <button onClick={start} onClick={() => {
+                start()
+                setTimeout(function () { stop() }, 3000);
+              }}
+                disabled={isRecording} className="tim"> </button> : ""}
+            {
+              stopRecord == true ? <button onClick={stop} disabled={!isRecording} className="tim2"></button> : ""
             }
-{
- stopRecord==true ?  <button onClick={stop} disabled={!isRecording} className="tim2">
-          
-          </button> :""
-}
-        
+            <br></br>
+            <div className="tim4">
+              <audio src={blobURL} controls="controls" />
 
-<br></br>
-<div className="tim4">
-        <audio src={blobURL} controls="controls" />
-
-        </div>
-        </div>
+            </div>
+          </div>
 
           {/* <Recorder
             record={true}
@@ -214,7 +215,7 @@ const PatientFormModal = ({
 
           /> */}
         </div>
-    
+
 
         <h4 className="personnal-question-title">Données Personnelles</h4>
         <Formik
@@ -271,7 +272,8 @@ const PatientFormModal = ({
               lastName: values.nom,
               address: values.adresse,
               zipCode: values.zipcode,
-              phoneNumber: values.mytel
+              phoneNumber: values.mytel,
+              audio:base64Image
             };
             submitFormCallback(caste);
           }}

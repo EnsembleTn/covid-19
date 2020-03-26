@@ -51,6 +51,7 @@
         "react-frame-component": "4.1.0",
         "react-jsx-highmaps": "^2.0.1",
         "react-masonry-css": "1.0.12",
+        "react-media-recorder": "^1.2.0",
         "react-number-format": "4.0.8",
         "react-popper": "1.0.2",
         "react-redux": "7.1.0-rc.1",
@@ -68,7 +69,8 @@
         "redux": "4.0.1",
         "redux-thunk": "2.3.0",
         "typeface-muli": "0.0.71",
-        "velocity-react": "1.4.3"
+        "velocity-react": "1.4.3",
+        "yup": "^0.28.3"
     },
     "resolutions": {
         "react": "16.8.6",
