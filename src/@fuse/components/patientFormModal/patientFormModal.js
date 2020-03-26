@@ -31,6 +31,8 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { Recorder } from 'react-voice-recorder'
 import MicRecorder from 'mic-recorder-to-mp3';
+import IconButton from "@material-ui/core/IconButton";
+import MicIcon from "@material-ui/icons/Mic";
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 
@@ -49,7 +51,7 @@ const PatientFormModal = ({
   const [paly, setplay] = useState(true);
   const [stopRecord, setstopRecord] = useState(false);
   const [base64Image, setbase64Image] = useState('');
-
+  const [isActive, setActive] = useState(false);
 
 
 
@@ -75,22 +77,17 @@ const PatientFormModal = ({
         setBlobURL(blobURL);
         setplay(true)
         setstopRecord(false)
-        console.log('STEPPPPPPPP', blobURL)
-
-
         axios({
           method: 'get',
           url: blobURL,
           responseType: 'blob'
         }).then(function (response) {
-          console.log('ressssssss', response.data)
 
           var reader = new FileReader();
           reader.readAsDataURL(response.data);
           reader.onloadend = function () {
             var base64data = reader.result;
-
-            console.log('Baseeeeeeeee', base64data)
+            base64data = base64data.split(",")[1];
             setbase64Image(base64data)
           }
 
@@ -98,19 +95,6 @@ const PatientFormModal = ({
 
       })
       .catch(e => console.log(e));
-
-
-
-
-
-
-
-
-
-
-
-
-
   };
 
 
@@ -192,13 +176,14 @@ const PatientFormModal = ({
         <div className="tim3">
           <div >
             {
-              paly == true ? <button onClick={start} onClick={() => {
+              paly == true ? <IconButton  color="primary" aria-label="record" onClick={start} onClick={() => {
                 start()
                 setTimeout(function () { stop() }, 3000);
               }}
-                disabled={isRecording} className="tim"> </button> : ""}
+                disabled={isRecording} >  <MicIcon /></IconButton> : ""}
             {
-              stopRecord == true ? <button onClick={stop} disabled={!isRecording} className="tim2"></button> : ""
+              stopRecord == true ? <IconButton color="secondary" aria-label="record"  
+              onClick={stop} disabled={!isRecording} > <MicIcon /></IconButton> : ""
             }
             <br></br>
             <div className="tim4">
@@ -206,14 +191,6 @@ const PatientFormModal = ({
 
             </div>
           </div>
-
-          {/* <Recorder
-            record={true}
-            // title={"New recording"}
-            showUIAudio
-            handleAudioStop={data => handleAudioStop(data)}
-
-          /> */}
         </div>
 
 
