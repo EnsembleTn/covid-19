@@ -176,13 +176,13 @@ const PatientFormModal = ({
         <div className="tim3">
           <div >
             {
-              paly == true ? <IconButton  color="primary" aria-label="record" onClick={start} onClick={() => {
+              paly == true ? <IconButton   color="primary" aria-label="record" onClick={start} onClick={() => {
                 start()
                 setTimeout(function () { stop() }, 3000);
               }}
                 disabled={isRecording} >  <MicIcon /></IconButton> : ""}
             {
-              stopRecord == true ? <IconButton color="secondary" aria-label="record"  
+              stopRecord == true ? <IconButton  color="secondary" aria-label="record"  
               onClick={stop} disabled={!isRecording} > <MicIcon /></IconButton> : ""
             }
             <br></br>
