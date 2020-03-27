@@ -1,8 +1,9 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
 import MuiTextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
 const QuestionEducation = props => {
+  const [error, setError] = useState(false);
   const [stateNon, setStateNon] = useState(false);
   const [stateOui, setStateOui] = useState(false);
   const [extraField, setExtraField] = useState("");
@@ -30,26 +31,31 @@ const QuestionEducation = props => {
     });
   };
 
-  const handleText=(data)=>{
-    props.getState({
-      field: "responses",
-      value: data,
-      stateNon,
-      title: props.title,
-      extraData: props
-    });
-    setExtraField(data)
-  }
-  console.log("props", props);
+  const handleText = data => {
+    if (new RegExp(/^[0-9]{1,3}$/).test(data)) {
+      props.getState({
+        field: "responses",
+        value: data,
+        stateNon,
+        title: props.title,
+        extraData: props
+      });
+      setExtraField(data);
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
+
   return (
     <div className="question-item">
       <h5>{props.title}</h5>
       <p className="arabic-question">{props.description}</p>
-      {(props.type === 1 || props.type===3) && (
+      {(props.type === 1 || props.type === 3) && (
         <div>
           <Button
             className=""
-            variant={`${stateOui ? "contained" : "outline"}`}
+            variant={`${stateOui ? "contained" : "outlined"}`}
             style={{
               border: "1px solid #11B683",
               borderRadius: 20,
@@ -66,7 +72,7 @@ const QuestionEducation = props => {
           </Button>
           <Button
             className=""
-            variant={`${stateNon ? "contained" : "outline"}`}
+            variant={`${stateNon ? "contained" : "outlined"}`}
             color="primary"
             style={{
               border: "1px solid #E23B42",
@@ -84,10 +90,11 @@ const QuestionEducation = props => {
         </div>
       )}
 
-      {(props.type===2 || props.type===3) && (
+      {(props.type === 2 || props.type === 3) && (
         <>
           <p>{props.textField}</p>
           <MuiTextField
+            error={error}
             variant="outlined"
             value={extraField}
             id="filled-basic"

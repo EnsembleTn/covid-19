@@ -1,23 +1,36 @@
-import * as React from "react";
-import { useState, useEffect } from "react";
-import axios from "axios";
-
+import DateFnsUtils from "@date-io/date-fns";
 import { Modal } from "@fuse";
-import { Formik, Form, Field } from "formik";
+import { Button, MenuItem, IconButton } from "@material-ui/core";
+import MicIcon from "@material-ui/icons/Mic";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import axios from "axios";
+import { Field, Form, Formik } from "formik";
+import { TextField } from "formik-material-ui";
+import MicRecorder from "mic-recorder-to-mp3";
+import * as React from "react";
+import { useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
 import QuestionEducation from "./QuestionEducation";
-import { Button, MuiTextField } from "@material-ui/core";
-// import MuiTextField from "@material-ui/core/TextField";
-import {
-  fieldToTextField,
-  TextField,
-  TextFieldProps
-} from "formik-material-ui";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import MicRecorder from "mic-recorder-to-mp3";
-import IconButton from "@material-ui/core/IconButton";
-import MicIcon from "@material-ui/icons/Mic";
+import * as yup from "yup";
+import LoiSnack from "../loiSnack";
+
+const PatientSchema = yup.object().shape({
+  mytel: yup
+    .string()
+    .matches(/^[0-9]{8}$/, "Doit être 8 chiffres")
+    .required("Champ téléphone requis"),
+  zipcode: yup
+    .number("Nombre positif")
+    .required("Champ age est requis")
+    .typeError("Zip est un nombre")
+    .positive("Nombre positif")
+    .integer("Nombre positif"),
+  nom: yup.string().required("Champ nom est requis"),
+  adresse: yup.string().required("Champ adresse est requis"),
+  prenom: yup.string().required("Champ prenom est requis"),
+  sexe: yup.string().required("Champ sexe est requis")
+});
+
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 const PatientFormModal = ({
@@ -127,20 +140,21 @@ const PatientFormModal = ({
   console.log("dynamicCount,  staticCount,", dynamicCount, staticCount);
   return (
     <Modal className="patientForm" id="PatientForm" ModalAction={modalAction}>
+      <LoiSnack />
       <div className="modal-header">
         <h4>FORMULAIRE DE MALADIE</h4>
         <button onClick={() => handleClose("PatientForm")}>x</button>
       </div>
       <div className="modal-content">
         {dataModal &&
-          dataModal.map(el => {
+          dataModal.map((el, key) => {
             return (
-              <div className="question-list">
+              <div key={key} className="question-list">
                 <h4>{el.label}</h4>
                 {el.questions.map((elem, i) => (
                   <QuestionEducation
                     index={i}
-                    key={elem.id}
+                    key={i}
                     getState={getAllState}
                     title={elem.fr_value}
                     description={elem.ar_value}
@@ -188,46 +202,10 @@ const PatientFormModal = ({
             prenom: "",
             adresse: "",
             mytel: "",
-            zipcode: ""
+            zipcode: "",
+            sexe: "H"
           }}
-          validate={values => {
-            const errors = {};
-            // if (!values.email) {
-            //   errors.email = "Required";
-            // } else if (
-            //   !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
-            // ) {
-            //   errors.email = "Invalid email address";
-            // }
-            if (values.nom === "") {
-              errors.nom = "Required";
-            }
-            if (values.prenom === "") {
-              errors.prenom = "Required";
-            }
-            /*          if (values.cin === "") {
-              errors.cin = "Required";
-            } */
-            if (values.adresse === "") {
-              errors.adresse = "Required";
-            } else if (values.adresse.length < 5) {
-              errors.adresse = "invalid length";
-            }
-
-            if (values.mytel === "") {
-              errors.mytel = "Required";
-            } else if (values.mytel.length <= 7) {
-              errors.mytel = "invalid length";
-            }
-
-            if (values.zipcode === "") {
-              errors.zipcode = "Required";
-            } else if (values.zipcode.length <= 3) {
-              errors.zipcode = "zip code must be 4 number";
-            }
-
-            return errors;
-          }}
+          validationSchema={PatientSchema}
           onSubmit={(values, { setSubmitting }) => {
             const caste = {
               firstName: values.prenom,
@@ -235,6 +213,7 @@ const PatientFormModal = ({
               address: values.adresse,
               zipCode: values.zipcode,
               phoneNumber: values.mytel,
+              gender: values.sexe,
               audio: base64Audio
             };
             submitFormCallback(caste);
@@ -258,6 +237,7 @@ const PatientFormModal = ({
                     type="text"
                     label="Nom"
                     name="nom"
+                    value={values.nom}
                     variant="outlined"
                     style={{
                       margin: "0 12px"
@@ -268,6 +248,7 @@ const PatientFormModal = ({
                     type="text"
                     label="Prenom"
                     name="prenom"
+                    value={values.prenom}
                     variant="outlined"
                     style={{
                       margin: "0 12px"
@@ -284,23 +265,29 @@ const PatientFormModal = ({
                     type="text"
                     label="Adress"
                     name="adresse"
+                    value={values.adresse}
                     variant="outlined"
                     style={{
                       margin: "0 12px"
                     }}
                   />
-                </div>
-
-                {/*  <Field
+                  <Field
+                    select
                     component={TextField}
-                    type="text"
-                    label="Cin"
-                    name="cin"
+                    label="sexe"
                     variant="outlined"
+                    fullwidth="true"
                     style={{
                       margin: "0 12px"
                     }}
-                  /> */}
+                    name="sexe"
+                    id="sexe"
+                    value={values.sexe}
+                  >
+                    <MenuItem value={"H"}>Homme</MenuItem>
+                    <MenuItem value={"F"}>Femme</MenuItem>
+                  </Field>
+                </div>
                 <div
                   style={{
                     margin: 10
@@ -311,48 +298,26 @@ const PatientFormModal = ({
                     type="text"
                     label="Numero de telephone"
                     name="mytel"
+                    value={values.mytel}
                     variant="outlined"
                     style={{
                       margin: "0 12px"
                     }}
                   />
 
-                  {/* <Field
-                    component={UpperCasingTextField}
-                    name="email"
-                    type="email"
-                    label="Email"
-                    style={{
-                      margin: "0 12px"
-                    }}
-                  /> */}
                   <Field
                     component={TextField}
                     type="text"
                     label="Zip Code"
                     name="zipcode"
+                    value={values.zipcode}
                     variant="outlined"
                     style={{
                       margin: "0 12px"
                     }}
                   />
                 </div>
-                {/*                <div
-                  style={{
-                    margin: 10
-                  }}
-                >
-                  <Field
-                    component={TextField}
-                    type="number"
-                    label="Numerode telephone"
-                    name="tel"
-                    variant="outlined"
-                    style={{
-                      margin: "0 12px"
-                    }}
-                  />
-                </div> */}
+
                 <div className="action-buttons">
                   <Button
                     className="cancel"

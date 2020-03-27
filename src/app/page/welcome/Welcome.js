@@ -8,9 +8,9 @@ import { WelcomeCard, PatientFormModal, InformModal } from "@fuse";
 import { connect } from "react-redux";
 import { ModalAction, addInformer } from "app/store/actions";
 import { makeStyles } from "@material-ui/core/styles";
-import {DOMAINE} from "config"
+import { DOMAINE } from "config";
 
-import Sms from "./sms"
+import Sms from "./sms";
 
 import "../../scss/welcome_page.scss";
 import navbar from "../../store/reducers/fuse/navbar.reducer";
@@ -46,18 +46,18 @@ const useStyles = makeStyles(theme => ({
   control: {
     padding: theme.spacing(2)
   },
-  samu:{
+  samu: {
     width: "80px",
     background: "rebeccapurple",
     color: "white",
     padding: "10px",
-    display:"flex",
-    alignItems:"center",
+    display: "flex",
+    alignItems: "center",
     position: "absolute",
     top: "50%"
   },
-  subsamu:{
-    color: "white",
+  subsamu: {
+    color: "white"
   }
 }));
 const Welcome = props => {
@@ -86,7 +86,7 @@ const Welcome = props => {
       handleClick: () => {
         history.push({
           pathname: "/login",
-          state:{type:"docteur"}
+          state: { type: "docteur" }
         });
       }
     },
@@ -178,17 +178,16 @@ const Welcome = props => {
   const submitForm = data => {
     const newData = { ...responses, ...data };
     console.log("newDataaaaaaaaaaaa", newData);
-    axios
-      .post(`${DOMAINE}/api/v1/patient`, { ...newData })
-      .then(res =>{
-        props.ModalAction("sms");
-      }) 
+    axios.post(`${DOMAINE}/api/v1/patient`, { ...newData }).then(res => {
+      console.log(res);
+      props.ModalAction("sms");
+    });
   };
   return (
     <div className="welcome-page">
-      <div className={classes.samu} >
+      <div className={classes.samu}>
         <button
-          onClick={() => props.history.push("/login",{type:"samu"})}
+          onClick={() => props.history.push("/login", { type: "samu" })}
           className={classes.subsamu}
         >
           Samu
@@ -237,9 +236,9 @@ const Welcome = props => {
       <div className="card-wrapper">
         <Grid container className={classes.root} spacing={2}>
           <Grid item xs={12}>
-            <Grid container justify="center" spacing="9">
-              {cardProps.map(item => (
-                <Grid key={item} item>
+            <Grid container justify="center" spacing={9}>
+              {cardProps.map((item, key) => (
+                <Grid key={key} item>
                   <WelcomeCard
                     text={item.text}
                     title={item.title}
@@ -282,7 +281,11 @@ const Welcome = props => {
           />
         )}
         <InformModal modalAction={props.ModalAction} />
-        <Sms tel={responses&& responses.phoneNumber} history={history} modalAction={props.ModalAction} />
+        <Sms
+          tel={responses && responses.phoneNumber}
+          history={history}
+          modalAction={props.ModalAction}
+        />
       </div>
     </div>
   );

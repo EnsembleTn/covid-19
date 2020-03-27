@@ -21,7 +21,7 @@ const Modal = ({
   return (
     <div>
       <Dialog
-        open={modal.modals[id]}
+        open={modal.modals[id] || false}
         // onClose={handleClose}
         aria-labelledby="form-dialog-title"
         className={className}
