@@ -15,6 +15,7 @@ import twitter from "../../img/social/twitter-icon.svg";
 import tunisieTelecom from "../../img/tunisieTelecom.png";
 import "../../scss/welcome_page.scss";
 import Sms from "./sms";
+import { useTranslation } from "react-i18next";
 
 const styles = theme => ({
   layoutRoot: {
@@ -68,12 +69,12 @@ const Welcome = props => {
   const cardProps = [
     {
       disabled: false,
-      title: "Médecin",
+      title: "CARD_DOCTOR_TITLE",
       className: "medecin",
       text:
-        "Vous êtes un medecin déjà inscrit sur la plateforme? Connectez-vous et aidez-nous à traiter les dossiers.",
+        "CARD_DOCTOR_TEXT",
       redirect: "/login",
-      buttonContent: "Connectez-vous",
+      buttonContent: "CARD_DOCTOR_BTN",
       src: "assets/images/welcome/doctor.png",
       handleClick: () => {
         history.push({
@@ -84,12 +85,12 @@ const Welcome = props => {
     },
     {
       disabled: false,
-      title: "Malade",
+      title: "CARD_PATIENT_TITLE",
       className: "malade",
       text:
-        "Vous ressentez les symptômes du COVID-19 mais vous n'arrivez pas à évaluer votre cas? Notre équipe des médecins pourra traiter votre dossier dans les plus brefs délais.",
+        "CARD_PATIENT_TEXT",
       redirect: "/malade",
-      buttonContent: "Contactez un médecin",
+      buttonContent: "CARD_PATIENT_BTN",
       src: "assets/images/welcome/sick.png",
       handleClick: () => {
         props.ModalAction("PatientForm");
@@ -97,12 +98,12 @@ const Welcome = props => {
     },
     {
       disabled: false,
-      title: "Informer",
+      title: "CARD_INFORMER_TITLE",
       className: "informer",
       text:
-        "Vous connaissez quelqu'un qui ne respecte pas les règles du confinement? Protégez-vous et protégez votre entourage en remplissant ce formulaire.",
+        "CARD_INFORMER_TEXT",
       redirect: "/informer",
-      buttonContent: "choisissez d'informer",
+      buttonContent: "CARD_INFORMER_BTN",
       src: "assets/images/welcome/inform.png",
       handleClick: () => {
         props.ModalAction("Inform");
@@ -177,6 +178,8 @@ const Welcome = props => {
     });
   };
 
+  const { t, i18n } = useTranslation('welcome');
+
   return (
     <div className="welcome-page">
       <div className={classes.samu}>
@@ -188,8 +191,23 @@ const Welcome = props => {
         </button>
       </div>
       <div className="main-navbar">
-        <div className="logo-container">
-          {/* <img className="logo" src={logo} alt="logo" /> */}
+        {/*<div className="logo-container">*/}
+        {/*   <img className="logo" src={logo} alt="logo" /> */}
+        {/*</div>*/}
+        <div className="language-selection-container">
+          <ul className="language-list">
+            <li>
+              <span
+                  className={i18n.language === 'ar' || i18n.language === undefined ? 'selected' : ''}
+                  onClick={() => i18n.changeLanguage('ar')}
+              >AR</span>
+            </li>
+            <li>
+              <span
+                  className={i18n.language === 'fr' ? 'selected' : ''}
+                  onClick={() => i18n.changeLanguage('fr')}>FR</span>
+            </li>
+          </ul>
         </div>
         <div className="social-container">
           <ul className="social-list">
@@ -229,10 +247,10 @@ const Welcome = props => {
               {cardProps.map((item, key) => (
                 <Grid key={key} item>
                   <WelcomeCard
-                    text={item.text}
-                    title={item.title}
+                    text={t(item.text)}
+                    title={t(item.title)}
                     handleClick={item.handleClick}
-                    buttonContent={item.buttonContent}
+                    buttonContent={t(item.buttonContent)}
                     src={item.src}
                     disabled={item.disabled}
                   ></WelcomeCard>
